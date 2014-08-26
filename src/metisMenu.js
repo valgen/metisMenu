@@ -31,6 +31,19 @@
                     documentCookie.substr(pos).split("=")[1].indexOf("false") ? $(this).addClass("active") : $(this).removeClass("active");
                 }
             });
+            
+            // Function defined to delete all the cookies
+            var clearCookies = function() {
+                var cookies = document.cookie.split(";");
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i];
+                    var eqPos = cookie.indexOf("=");
+                    var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                    if (name.trim().slice(0, $cookieName.length) === $cookieName) {
+                        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+                    }
+                }
+            };
 
             if (this.isIE() <= 9) {
                 $this.find("li.active").has("ul").children("ul").collapse("show");
@@ -39,6 +52,10 @@
                 $this.find("li.active").has("ul").children("ul").addClass("collapse in");
                 $this.find("li").not(".active").has("ul").children("ul").addClass("collapse");
             }
+            
+            $this.children("li:not(:has('ul'))").children("a").on("click", function () {
+                clearCookies();
+            });
 
             $this.find("li").has("ul").children("a").on("click", function (e) {
                 e.preventDefault();
@@ -49,16 +66,8 @@
                     $(this).parent("li").siblings().removeClass("active").children("ul.in").collapse("hide");
                 }
                 
-                //Deletes all cookies
-                var cookies = document.cookie.split(";");
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = cookies[i];
-                    var eqPos = cookie.indexOf("=");
-                    var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-                    if (name.trim().slice(0, $cookieName.length) === $cookieName) {
-                        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-                    }
-                }
+                clearCookies();
+                
                 //Stores the menu state in cookies
                 var date = new Date();
                 date.setTime(date.getTime() + ($cookieExpiration * 24 * 60 * 60 * 1000));
